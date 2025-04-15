@@ -1,21 +1,24 @@
 on:
   workflow_dispatch:
     inputs:
-      tag:
-        description: 'Version tag to release'
+      release_tag:
+        description: 'Tag for the release'
         required: true
-      pattern:
-        description: 'Pattern to match release artifacts'
-        default: 'gh-extension-*'
+      draft_release:
+        description: 'Create a draft release'
+        required: false
+        default: false
+      
 
 permissions:
   contents: write
+  id-token: write
+  attestation: write
 
 env:
   GITHUB_TOKEN: ${{ github.token }}
   SOURCE_REPO: github/github-mcp-server
   VERSION_TAG: ${{ github.event.inputs.tag }}
-  PATTERN: ${{ github.event.inputs.pattern }}
 
 jobs:
   release:
@@ -23,12 +26,11 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-
-      - name: Get release artifacts
-        run:
-          gh release download --repo ${{ env.SOURCE_REPO }}  --pattern ${{ env.PATTERN }}
-
-      - name: Create release
-        run: |
-          gh release create ${{ env.VERSION_TAG }} --title "${{ env.VERSION_TAG }}" --notes "Release ${{ env.VERSION_TAG }}"
-          gh release upload ${{ env.VERSION_TAG }} --clobber ${{ env.PATTERN }}
+        with:
+          repository: ${{ env.SOURCE_REPO }}
+      - uses: cli/gh-extension-precompile@v2
+        with:
+          release_title_prefix: 'GitHub MCP Server - GitHub CLI Extension '
+          go_version_file: go.mod
+          draft_release: ${{ github.event.inputs.draft_release }}
+          generate_attestations: true
