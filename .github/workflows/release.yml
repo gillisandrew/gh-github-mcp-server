@@ -42,7 +42,7 @@ jobs:
           # GoReleaser version
           version: "~> v2"
           # Arguments to pass to GoReleaser
-          args: release --clean --config ../goreleaser.yaml
+          args: release --clean --config ../.goreleaser.yaml
           workdir: ./source
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
