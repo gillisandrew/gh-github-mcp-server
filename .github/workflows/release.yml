@@ -12,7 +12,7 @@ permissions:
   contents: write
 
 env:
-  GITHUB_TOKEN: ${{ github.GITHUB_TOKEN }}
+  GITHUB_TOKEN: ${{ github.token }}
   SOURCE_REPO: github/github-mcp-server
   VERSION_TAG: ${{ github.event.inputs.tag }}
   PATTERN: ${{ github.event.inputs.pattern }}
