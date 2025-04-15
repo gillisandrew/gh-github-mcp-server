@@ -12,7 +12,7 @@ permissions:
   contents: write
 
 env:
-  GITHUB_TOKEN: ${{ github.token }}
+  GITHUB_TOKEN: ${{ github.GITHUB_TOKEN }}
   SOURCE_REPO: github/github-mcp-server
   VERSION_TAG: ${{ github.event.inputs.tag }}
   PATTERN: ${{ github.event.inputs.pattern }}
@@ -21,12 +21,14 @@ jobs:
   release:
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
       - name: Get release artifacts
-        id: get_release_artifacts
         run:
           gh release download --repo ${{ env.SOURCE_REPO }}  --pattern ${{ env.PATTERN }}
+
       - name: Create release
-        id: create_release
         run: |
           gh release create ${{ env.VERSION_TAG }} --title "${{ env.VERSION_TAG }}" --notes "Release ${{ env.VERSION_TAG }}"
           gh release upload ${{ env.VERSION_TAG }} --clobber ${{ env.PATTERN }}
